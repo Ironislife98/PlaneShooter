@@ -6,7 +6,9 @@ pygame.init()
 # Initialize Images
 
 
-background = pygame.image.load("Sprites\Background\\Nebula11Top.png")
+background = pygame.image.load("Sprites\Background\\Nebula_1_1_Bottom.png")
+
+playerimage = pygame.image.load("Sprites\Player Ships\Short-Lazer-Ship.png")
 
 
 
@@ -14,9 +16,7 @@ background = pygame.image.load("Sprites\Background\\Nebula11Top.png")
 
 
 
-
-
-WIDTH, HEIGHT = 500, 500
+WIDTH, HEIGHT = 1000, 900
 
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -27,16 +27,25 @@ FRAMERATE = 60
 
 
 class Player:
-    def __init__(self, x, y, surface) -> None:
+    def __init__(self, x, y, surface, image=playerimage, resizeFactor=.175) -> None:
         self.x = x
         self.y = y
         self.surface = surface
         self.color = (255, 255, 255)
         self.rect = pygame.Rect(30, 30, 60, 60)
+        self.image = image
+        self.resizeFactor = resizeFactor
 
+        self.resizeimage()
+
+    def resizeimage(self) -> None:
+        width = self.image.get_rect().width
+        height = self.image.get_rect().height
+
+        self.image = pygame.transform.scale(self.image, (int(width * self.resizeFactor), int(height * self.resizeFactor)))
 
     def draw(self):
-        return pygame.draw.rect(self.surface, self.color, self.rect, width=0)
+        return self.surface.blit(self.image, (self.x, self.y))
 
 
 
@@ -47,7 +56,8 @@ def stopGame():
     run = False
     sys.exit()
 
-player = Player(20, 30, window)
+# Player starting pos (400, 700)
+player = Player(400, 700, window)
 
 
 
@@ -57,6 +67,11 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             stopGame()
+
+    # Handle Movement
+    pressed = pygame.key.get_presseed()
+
+
     window.blit(background, (0, 0))       
     player.draw()
 
