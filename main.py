@@ -4,6 +4,7 @@ from pygame.locals import *
 import random
 import time
 import sys
+import threading
 
 pygame.init()
 
@@ -219,7 +220,18 @@ def GenerateEnemies(round):
         randomy = random.randint(0, 400)
         enemies.append(Enemy(randomx, randomy))
 
-
+def drawAll():
+    for bullet in bullets:
+            bullet.draw()
+            bullet.move()
+    window.blit(background, (0, 0))
+    window.blit(bgstars, (0, 0))         
+    for enemy in enemies:
+        enemy.draw()
+    player.draw()
+    for bullet in machinebullets:
+        bullet.draw()
+        bullet.move()
 def stopGame():
     global run
     pygame.quit()
@@ -240,9 +252,7 @@ while run:
         if event.type == pygame.QUIT:
             stopGame()
 
-    for bullet in bullets:
-        bullet.draw()
-        bullet.move()
+    
     
 
     
@@ -253,10 +263,10 @@ while run:
     pressed = pygame.key.get_pressed()
     player.Movement(pressed)
 
-    # Draw backgrounds  
-    window.blit(background, (0, 0))
-    window.blit(bgstars, (0, 0)) 
-
+    # Draw everything
+    drawthread = threading.Thread(target=drawAll)
+    drawthread.start()
+   
 
     for bullet in machinebullets:
         #print(player.x in range(int(bullet.hitbox.x + bullet.hitbox.width)) and player.y in range(int(bullet.hitbox.y + bullet.hitbox.width))) \
@@ -290,13 +300,10 @@ while run:
 
     print(player.hit)
 
-    player.draw()
-    for enemy in enemies:
-        enemy.draw()
+    
+    
 
-    for bullet in machinebullets:
-        bullet.draw()
-        bullet.move()
+    
 
 
     pygame.display.flip()
