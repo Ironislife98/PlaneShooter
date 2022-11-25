@@ -45,14 +45,15 @@ class hitbox:
     def __init__(self, obj, offset=0, xoffset=0, yoffset=0, machinebullet=False, playerbullet=True) -> None:
         self.obj = obj
         self.offset = offset
-        self.x = obj.x
-        self.y = obj.y
+        self.xoffset = xoffset
+        self.yoffset = yoffset
+        self.x = obj.x + self.xoffset
+        self.y = obj.y + self.yoffset
         self.width = obj.image.get_rect().width * self.obj.resizeFactor
         self.height = obj.image.get_rect().height * self.obj.resizeFactor - self.offset
         
         
-        self.xoffset = xoffset
-        self.yoffset = yoffset
+        
         self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x + self.xoffset, self.y + self.yoffset, self.width , self.height), 2)
 
         self.machinebullet = machinebullet
@@ -68,7 +69,7 @@ class hitbox:
     # Only used for testing
     # Hitboxes should be invisible
     def draw(self) -> None:
-        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x + self.xoffset, self.y + self.yoffset, self.width, self.height), 2)
+        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x , self.y , self.width, self.height), 2)
 
 
 class Player:
@@ -84,6 +85,7 @@ class Player:
         self.firetime = None
         self.resizeFactor = resizeFactor
         self.hitbox = hitbox(self, offset=20)
+        self.hit = False
 
        
 
@@ -164,6 +166,8 @@ class Bullet():
         height = self.image.get_rect().width
         if self.y <= -height:
             bullets.pop(0)
+        elif self.y >= HEIGHT + height:
+            machinebullets.pop(0)
         return self.surface.blit(self.image, (self.x, self.y))
 
 
@@ -198,11 +202,12 @@ class Enemy:
         shootbullet = random.randint(0, self.spawnbulletchance)
         self.hitbox.draw()
         if shootbullet == self.spawnbulletchance / 2:
-            print("shoot")
             self.spawnmachinebullet()
 
         return self.surface.blit(self.image, (self.x, self.y))
 
+    def destroy(self):
+        print("Destroy")
 
 def GenerateEnemies(round):
     global enemies, enemiespos
@@ -213,17 +218,6 @@ def GenerateEnemies(round):
         randomx = random.randint(0, 600)
         randomy = random.randint(0, 400)
         enemies.append(Enemy(randomx, randomy))
-
-
-def collidecheck() -> str:  # Values to return: Yes player, Yes enemny, No
-    pass
-    for bullet in machinebullets:
-        if player.x in range(bullet.hitbox.x + bullet.hitbox.width) and player.y in ():
-            pass
-    for enemy in enemies:
-        if enemy.x in () and enemy.y in ():
-            pass
-
 
 
 def stopGame():
@@ -258,17 +252,48 @@ while run:
     # Used because will always monitor if key is presseed
     pressed = pygame.key.get_pressed()
     player.Movement(pressed)
-    #window.blit(bgstars, (0, 0))    
+
+    # Draw backgrounds  
     window.blit(background, (0, 0))
+    window.blit(bgstars, (0, 0)) 
+
+
     for bullet in machinebullets:
         #print(player.x in range(int(bullet.hitbox.x + bullet.hitbox.width)) and player.y in range(int(bullet.hitbox.y + bullet.hitbox.width))) \
         bulletboxX = bullet.hitbox.x + bullet.hitbox.width
+        bulletboxY = bullet.hitbox.y + bullet.hitbox.height
         playerboxX = player.hitbox.x + player.hitbox.width
         playerboxY = player.hitbox.y + player.hitbox.height
-        print(player.x in range(int(bulletboxX)) and bullet.hitbox.x in range(int(playerboxX)) and bullet.hitbox.y in range(int(playerboxY)))
+        # Essentially will generate a range of x values for the players hitbox and a range of y values of the players hitbox
+        # Then will check if the bullet hitbox is in the players hitbox
+        #print(f"Player x: {player.x}, range {range(int(bulletboxY))}")
+        #print(len(machinebullets))
+        collided = player.hitbox.x in range(int(bulletboxX)) and bullet.hitbox.x in range(int(playerboxX)) and bullet.hitbox.y in range(int(playerboxY)) and player.hitbox.y in range(int(bulletboxY))
+        if collided:
+            player.hit = True
+        else:
+            player.hit = False
+
+    # Should be refactored later
+    # VERY
+    for bullet in bullets:
+        for enemy in enemies:
+            bulletboxX = bullet.hitbox.x + bullet.hitbox.width
+            enemyboxX = enemy.hitbox.x + enemy.hitbox.width
+            enemyboxY = enemy.hitbox.y + enemy.hitbox.height
+            collided = enemy.x in range(int(bulletboxX)) and bullet.hitbox.x in range(int(enemyboxX)) and bullet.hitbox.y in range(int(enemyboxY))
+            if collided:
+                enemy.destroy()
+
+
+
+
+    print(player.hit)
+
     player.draw()
     for enemy in enemies:
-        pass
+        enemy.draw()
+
     for bullet in machinebullets:
         bullet.draw()
         bullet.move()
