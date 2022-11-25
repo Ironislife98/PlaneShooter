@@ -54,7 +54,7 @@ class hitbox:
         
         
         
-        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x + self.xoffset, self.y + self.yoffset, self.width , self.height), 2)
+        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width , self.height), 2)
 
         self.machinebullet = machinebullet
         self.playerbullet = playerbullet
@@ -63,13 +63,13 @@ class hitbox:
         hitboxrects.append(self.rect)
 
     def move(self) -> None:
-        self.x = self.obj.x
-        self.y = self.obj.y
+        self.x = self.obj.x + self.xoffset
+        self.y = self.obj.y + self.yoffset
 
     # Only used for testing
     # Hitboxes should be invisible
     def draw(self) -> None:
-        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x , self.y , self.width, self.height), 2)
+        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width, self.height), 2)
 
 
 class Player:
