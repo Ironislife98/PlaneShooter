@@ -21,11 +21,10 @@ enemySprite = pygame.image.load("Sprites\Enemies\Enemy_01.png")
 enemyhitanimation = [pygame.image.load("Sprites\VFX\Enemy Hit Effect\Enemy Hit Effect_01.png"), pygame.image.load("Sprites\VFX\Enemy Hit Effect\Enemy Hit Effect_02.png")]
 
 
-# List of stuff
+# Lists of stuff
 bullets = []
 machinebullets = []
 enemies = []
-enemiespos = []
 animations = []
 
 
@@ -37,6 +36,7 @@ clock = pygame.time.Clock()
 
 FRAMERATE = 60
 
+# Classes
 
 class hitbox:
     def __init__(self, obj, offset=0, xoffset=0, yoffset=0, machinebullet=False, playerbullet=False, height=0, width=0) -> None:
@@ -57,7 +57,6 @@ class hitbox:
 
         self.machinebullet = machinebullet
         self.playerbullet = playerbullet
-
 
     def move(self) -> None:
         self.x = self.obj.x + self.xoffset
@@ -130,7 +129,7 @@ class Player:
         return self.surface.blit(self.image, (self.x, self.y))
 
 
-class Bullet():
+class Bullet:
     def __init__(self, x, y, xoffset=25, yoffset=70, image=pygame.image.load("Sprites\Weapons\Ball_02.png"),
                  bullet=True, dir=1):
         global bullets
@@ -240,8 +239,9 @@ class explodeAnimation(Animation):
         super().__init__(x, y, enemyhitanimation, xoffset=-100, yoffset=-200)
 
 
+# Non-Classes functions
+
 def GenerateEnemies(round):
-    global enemies, enemiespos
     numenemies = round * 2
     for enemy in range(numenemies):
         randomx = 0
@@ -272,19 +272,6 @@ def collisionCheck():
     while run:
         clock.tick(FRAMERATE)
         for bullet in machinebullets:
-            """
-            bulletboxX = bullet.hitbox.x + bullet.hitbox.width
-            bulletboxY = bullet.hitbox.x + bullet.hitbox.height
-            playerboxX = player.hitbox.x + player.hitbox.width
-            playerboxY = player.hitbox.y + player.hitbox.height
-            collided = player.hitbox.x in range(int(bulletboxX)) and bullet.hitbox.x in range(
-                int(playerboxX)) and bullet.hitbox.y in range(int(playerboxY))
-            print(collided)"""
-            bulletboxX = bullet.hitbox.x + bullet.hitbox.width
-            bulletboxY = bullet.hitbox.x + bullet.hitbox.height
-            playerboxX = player.hitbox.x + player.hitbox.width
-            playerboxY = player.hitbox.y + player.hitbox.height
-            #print(f"bullet x: {bullet.hitbox.x} playerx boundary: {range(player.hitbox.x, player.hitbox.x + player.hitbox.width)}")
             collided = (player.hitbox.y < bullet.hitbox.y + bullet.hitbox.height) and bullet.hitbox.x in range(player.hitbox.x, player.hitbox.x + player.hitbox.width)
 
 
