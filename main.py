@@ -52,9 +52,7 @@ class hitbox:
         self.y = obj.y + self.yoffset
         self.width = obj.image.get_rect().width * self.obj.resizeFactor
         self.height = obj.image.get_rect().height * self.obj.resizeFactor - self.offset
-        
-        
-        
+
         self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width , self.height), 2)
 
         self.machinebullet = machinebullet
@@ -232,6 +230,7 @@ def drawAll():
     for bullet in machinebullets:
         bullet.draw()
         bullet.move()
+
 def stopGame():
     global run
     pygame.quit()
@@ -252,21 +251,14 @@ while run:
         if event.type == pygame.QUIT:
             stopGame()
 
-    
-    
-
-    
-
-    # Handle Movement
+    # Handle Movemente
     # Not best method of detecting keys
     # Used because will always monitor if key is presseed
     pressed = pygame.key.get_pressed()
     player.Movement(pressed)
 
     # Draw everything
-    drawthread = threading.Thread(target=drawAll)
-    drawthread.start()
-   
+    drawAll()
 
     for bullet in machinebullets:
         #print(player.x in range(int(bullet.hitbox.x + bullet.hitbox.width)) and player.y in range(int(bullet.hitbox.y + bullet.hitbox.width))) \
@@ -285,7 +277,7 @@ while run:
             player.hit = False
 
     # Should be refactored later
-    # VERY
+    # VERY IN EFFICIENT
     for bullet in bullets:
         for enemy in enemies:
             bulletboxX = bullet.hitbox.x + bullet.hitbox.width

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4e76945a-8dbb-444b-8cf7-6a7b967a8fda" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Setup Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2I660ouCN0MohTNrwPMgVlTK0Mx" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/main.py" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="PlaneShooter" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="D:\PycharmProjects\PlaneShooter\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4e76945a-8dbb-444b-8cf7-6a7b967a8fda" name="Default Changelist" comment="" />
+      <created>1669489465418</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1669489465418</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="542" y="183" width="1094" height="732" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1669489995621">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="542" y="183" width="1094" height="732" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669489995621" />
+    <state x="739" y="286" key="FileChooserDialogImpl" timestamp="1669489983186">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="739" y="286" key="FileChooserDialogImpl/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669489983186" />
+    <state width="1899" height="282" key="GridCell.Tab.0.bottom" timestamp="1669490179336">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.bottom/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669490179336" />
+    <state width="1899" height="282" key="GridCell.Tab.0.center" timestamp="1669490179335">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.center/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669490179335" />
+    <state width="1899" height="282" key="GridCell.Tab.0.left" timestamp="1669490179335">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.left/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669490179335" />
+    <state width="1899" height="282" key="GridCell.Tab.0.right" timestamp="1669490179335">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.right/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669490179335" />
+    <state x="183" y="85" key="MergeDialog" timestamp="1669490056221">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="183" y="85" key="MergeDialog/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669490056221" />
+    <state x="382" y="211" key="SettingsEditor" timestamp="1669489879570">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="382" y="211" key="SettingsEditor/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669489879570" />
+    <state x="776" y="433" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1669490011552">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="776" y="433" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/-1920.1.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1669490011552" />
+  </component>
+</project>
