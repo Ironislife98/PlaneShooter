@@ -14,12 +14,9 @@ pygame.init()
 background = pygame.image.load("Sprites\Background\\Nebula_1_1_Bottom.png")
 bgstars = pygame.image.load("Sprites\Background\Stars-Medium_1_1_PC.png")
 
-
 playerimage = pygame.image.load("Sprites\Player Ships\Short-Lazer-Ship.png")
 
 enemySprite = pygame.image.load("Sprites\Enemies\Enemy_01.png")
-
-
 
 # List of stuff
 bullets = []
@@ -30,10 +27,7 @@ enemiespos = []
 hitboxes = []
 hitboxrects = []
 
-
-
 WIDTH, HEIGHT = 1000, 900
-
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Plane Shooter")
@@ -53,11 +47,11 @@ class hitbox:
         self.width = obj.image.get_rect().width * self.obj.resizeFactor
         self.height = obj.image.get_rect().height * self.obj.resizeFactor - self.offset
 
-        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width , self.height), 2)
+        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width, self.height), 2)
 
         self.machinebullet = machinebullet
         self.playerbullet = playerbullet
-        
+
         hitboxes.append(self)
         hitboxrects.append(self.rect)
 
@@ -86,20 +80,19 @@ class Player:
         self.hitbox = hitbox(self, offset=20)
         self.hit = False
 
-       
+        self.resizeImage()
 
-        self.resizeimage()
-
-    def resizeimage(self) -> None:
+    def resizeImage(self) -> None:
         width = self.image.get_rect().width
         height = self.image.get_rect().height
 
-        self.image = pygame.transform.scale(self.image, (int(width * self.resizeFactor), int(height * self.resizeFactor)))
+        self.image = pygame.transform.scale(self.image,
+                                            (int(width * self.resizeFactor), int(height * self.resizeFactor)))
 
-    def Movement(self, pressed: dict) -> None:
+    def Movement(self, pressed) -> None:
         if pressed[pygame.K_a]:
             self.x -= self.vel
-        
+
         if pressed[pygame.K_d]:
             self.x += self.vel
 
@@ -126,14 +119,14 @@ class Player:
     def spawnBullet(self):
         Bullet(self.x, self.y)
 
-
-    def draw(self): 
-        self.hitbox.draw()    
+    def draw(self):
+        self.hitbox.draw()
         return self.surface.blit(self.image, (self.x, self.y))
 
 
 class Bullet():
-    def __init__(self, x , y, xoffset=25, yoffset=70, image=pygame.image.load("Sprites\Weapons\Ball_02.png"), bullet=True, dir=1):
+    def __init__(self, x, y, xoffset=25, yoffset=70, image=pygame.image.load("Sprites\Weapons\Ball_02.png"),
+                 bullet=True, dir=1):
         global bullets
         self.x = x + xoffset
         self.y = y - yoffset
@@ -142,7 +135,7 @@ class Bullet():
         self.bullet = bullet
         self.dir = dir
 
-        self.resizeFactor = .35   # used for compatibility, needs resizefactor to resize for player and enemy
+        self.resizeFactor = .35  # used for compatibility, needs resizefactor to resize for player and enemy
         if self.bullet:
             self.hitbox = hitbox(self, offset=10, xoffset=40, yoffset=47, playerbullet=True)
         else:
@@ -154,7 +147,6 @@ class Bullet():
         else:
             machinebullets.append(self)
 
-
     def move(self):
         self.y -= self.vel * self.dir
         self.hitbox.move()
@@ -165,11 +157,9 @@ class Bullet():
         height = self.image.get_rect().width
         if self.y <= -height:
             bullets.pop(0)
-        elif self.y >= HEIGHT + height:
+        elif self.y >= HEIGHT:
             machinebullets.pop(0)
         return self.surface.blit(self.image, (self.x, self.y))
-
-
 
 
 class Enemy:
@@ -179,7 +169,7 @@ class Enemy:
         self.image = image
         self.surface = surface
         self.resizeFactor = resizeFactor
-        
+
         self.hitbox = hitbox(self, offset=0)
 
         self.spawnbulletchance = spawnbulletchance / round
@@ -190,14 +180,14 @@ class Enemy:
         width = self.image.get_rect().width
         height = self.image.get_rect().height
 
-        self.image = pygame.transform.scale(self.image, (int(width * self.resizeFactor), int(height * self.resizeFactor)))
-    
+        self.image = pygame.transform.scale(self.image,
+                                            (int(width * self.resizeFactor), int(height * self.resizeFactor)))
+
     def spawnmachinebullet(self) -> None:
-        Bullet(self.x, self.y, xoffset=45, yoffset=-70, image=pygame.image.load("Sprites\Weapons\Machine Gun.png"), bullet=False, dir=-1)
+        Bullet(self.x, self.y, xoffset=45, yoffset=-70, image=pygame.image.load("Sprites\Weapons\Machine Gun.png"),
+               bullet=False, dir=-1)
 
     def draw(self):
-
-
         shootbullet = random.randint(0, self.spawnbulletchance)
         self.hitbox.draw()
         if shootbullet == self.spawnbulletchance / 2:
@@ -208,9 +198,10 @@ class Enemy:
     def destroy(self):
         print("Destroy")
 
+
 def GenerateEnemies(round):
     global enemies, enemiespos
-    numenemies = round * 2 
+    numenemies = round * 2
     for enemy in range(numenemies):
         randomx = 0
         randomy = 0
@@ -218,12 +209,13 @@ def GenerateEnemies(round):
         randomy = random.randint(0, 400)
         enemies.append(Enemy(randomx, randomy))
 
+
 def drawAll():
     for bullet in bullets:
-            bullet.draw()
-            bullet.move()
+        bullet.draw()
+        bullet.move()
     window.blit(background, (0, 0))
-    window.blit(bgstars, (0, 0))         
+    window.blit(bgstars, (0, 0))
     for enemy in enemies:
         enemy.draw()
     player.draw()
@@ -231,11 +223,43 @@ def drawAll():
         bullet.draw()
         bullet.move()
 
+
+def collisionCheck():
+    global player
+    while run:
+        for bullet in machinebullets:
+            clock.tick(FRAMERATE)
+            collided = False
+            bulletboxX = [int(bullet.hitbox.x), int(bullet.hitbox.x + bullet.hitbox.width)]
+            bulletboxY = [int(bullet.hitbox.y), int(bullet.hitbox.x + bullet.hitbox.height)]
+            playerboxX = [int(player.hitbox.x), int(player.hitbox.x + player.hitbox.width)]
+            playerboxY = [int(player.hitbox.y), int(player.hitbox.y + player.hitbox.height)]
+
+            # Essentially will generate a range of x values for the players hitbox and a range of y values of the players hitbox
+            # Then will check if the bullet hitbox is in the players hitbox
+            # print(f"Player x: {player.x}, range {range(int(bulletboxY))}")
+            # print(len(machinebullets))
+            if player.hitbox.y < (bullet.hitbox.y + bullet.hitbox.height):
+                if (bullet.hitbox.x < player.hitbox.x < (bullet.hitbox.x + bullet.hitbox.width)) or (
+                        bullet.hitbox.x < (player.hitbox.x + player.hitbox.width) < (bullet.hitbox.x + bullet.hitbox.y)):
+                    collided = True
+                else:
+                    collided = False
+            else:
+                collided = False
+
+            if collided:
+                player.hit = True
+            else:
+                player.hit = False
+
+
 def stopGame():
     global run
     pygame.quit()
     run = False
     sys.exit()
+
 
 # Player starting pos (400, 700)
 player = Player(400, 700, window)
@@ -245,36 +269,27 @@ round = 1
 GenerateEnemies(round)
 
 run = True
+
+collisionThread = threading.Thread(target=collisionCheck)
+collisionThread.start()
+
+
 while run:
     clock.tick(FRAMERATE)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             stopGame()
 
-    # Handle Movemente
+    # Handle Movement
     # Not best method of detecting keys
-    # Used because will always monitor if key is presseed
+    # Used because will always monitor if key is pressed
     pressed = pygame.key.get_pressed()
     player.Movement(pressed)
 
     # Draw everything
     drawAll()
 
-    for bullet in machinebullets:
-        #print(player.x in range(int(bullet.hitbox.x + bullet.hitbox.width)) and player.y in range(int(bullet.hitbox.y + bullet.hitbox.width))) \
-        bulletboxX = bullet.hitbox.x + bullet.hitbox.width
-        bulletboxY = bullet.hitbox.y + bullet.hitbox.height
-        playerboxX = player.hitbox.x + player.hitbox.width
-        playerboxY = player.hitbox.y + player.hitbox.height
-        # Essentially will generate a range of x values for the players hitbox and a range of y values of the players hitbox
-        # Then will check if the bullet hitbox is in the players hitbox
-        #print(f"Player x: {player.x}, range {range(int(bulletboxY))}")
-        #print(len(machinebullets))
-        collided = player.hitbox.x in range(int(bulletboxX)) and bullet.hitbox.x in range(int(playerboxX)) and bullet.hitbox.y in range(int(playerboxY)) and player.hitbox.y in range(int(bulletboxY))
-        if collided:
-            player.hit = True
-        else:
-            player.hit = False
+
 
     # Should be refactored later
     # VERY IN EFFICIENT
@@ -283,19 +298,10 @@ while run:
             bulletboxX = bullet.hitbox.x + bullet.hitbox.width
             enemyboxX = enemy.hitbox.x + enemy.hitbox.width
             enemyboxY = enemy.hitbox.y + enemy.hitbox.height
-            collided = enemy.x in range(int(bulletboxX)) and bullet.hitbox.x in range(int(enemyboxX)) and bullet.hitbox.y in range(int(enemyboxY))
+            collided = enemy.x in range(int(bulletboxX)) and bullet.hitbox.x in range(
+                int(enemyboxX)) and bullet.hitbox.y in range(int(enemyboxY))
             if collided:
                 enemy.destroy()
-
-
-
-
-    print(player.hit)
-
-    
-    
-
-    
 
 
     pygame.display.flip()
