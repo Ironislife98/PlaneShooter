@@ -18,14 +18,16 @@ playerimage = pygame.image.load("Sprites\Player Ships\Short-Lazer-Ship.png")
 
 enemySprite = pygame.image.load("Sprites\Enemies\Enemy_01.png")
 
+enemyhitanimation = [pygame.image.load("Sprites\VFX\Enemy Hit Effect\Enemy Hit Effect_01.png"), pygame.image.load("Sprites\VFX\Enemy Hit Effect\Enemy Hit Effect_02.png")]
+
+
 # List of stuff
 bullets = []
 machinebullets = []
 enemies = []
 enemiespos = []
+animations = []
 
-hitboxes = []
-hitboxrects = []
 
 WIDTH, HEIGHT = 1000, 900
 
@@ -56,8 +58,6 @@ class hitbox:
         self.machinebullet = machinebullet
         self.playerbullet = playerbullet
 
-        hitboxes.append(self)
-        hitboxrects.append(self.rect)
 
     def move(self) -> None:
         self.x = self.obj.x + self.xoffset
@@ -202,7 +202,42 @@ class Enemy:
         return self.surface.blit(self.image, (self.x, self.y))
 
     def destroy(self):
-        print("Destroy")
+        enemies.pop(enemies.index(self))
+        animation = explodeAnimation(bullets[0].hitbox.x, bullets[0].hitbox.y)
+        animation.animate()
+        bullets.pop(0)
+
+
+# Animations
+
+class Animation:
+    def __init__(self, x, y, images, repeatTimes=10 , startIndex=0, xoffset=0, yoffset=0):
+        self.x = x + xoffset
+        self.y = y + yoffset
+        self.repeatTimes = repeatTimes
+        self.images = images
+        self.counter = startIndex
+        self.image = self.images[self.counter]
+        animations.append(self)
+
+    def animate(self):
+        self.draw()
+        if self.counter <= self.repeatTimes:        # Repeat for times given
+            self.image = self.images[self.counter % len(self.images)]   # % len(self.images) to reset back to 0
+            self.counter += 1   # Update counter
+        else:
+            self.destroy()
+
+    def destroy(self):
+        animations.pop(animations.index(self))
+
+    def draw(self):
+        return window.blit(self.image, (self.x, self.y))
+
+
+class explodeAnimation(Animation):
+    def __init__(self, x, y):
+        super().__init__(x, y, enemyhitanimation, xoffset=-100, yoffset=-200)
 
 
 def GenerateEnemies(round):
@@ -228,7 +263,8 @@ def drawAll():
     for enemy in enemies:
         enemy.draw()
     player.draw()
-
+    for animation in animations:
+        animation.animate()
 
 
 def collisionCheck():
@@ -288,7 +324,6 @@ while run:
     # Draw everything
     drawAll()
 
-    time.sleep(delay)
 
     # Should be refactored later
     # VERY IN EFFICIENT
