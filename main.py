@@ -1,3 +1,5 @@
+from math import ceil
+
 import pygame
 from pygame.locals import *
 
@@ -7,6 +9,7 @@ import sys
 import threading
 
 pygame.init()
+pygame.font.init()
 
 # Initialize Images
 
@@ -25,17 +28,22 @@ bullets = []
 machinebullets = []
 enemies = []
 animations = []
+messages = []
 
-
+# CONSTANTS
 WIDTH, HEIGHT = 1000, 900
+FRAMERATE = 60
+FONT = pygame.font.SysFont("Fixedsys Regular", 30)
+
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Plane Shooter")
 clock = pygame.time.Clock()
 
-FRAMERATE = 60
+
 
 # Classes
+
 
 class hitbox:
     def __init__(self, obj, offset=0, xoffset=0, yoffset=0, machinebullet=False, playerbullet=False, height=0, width=0) -> None:
@@ -100,7 +108,7 @@ class Player:
         if pressed[pygame.K_d]:
             self.x += self.vel
 
-        if pressed[pygame.K_w]:
+        if pressed[pygame.K_w] and not startingNewRound:
             if not self.fire:
                 self.spawnBullet()
                 self.firetime = time.time()
@@ -130,7 +138,7 @@ class Player:
 
 class Bullet:
     def __init__(self, x, y, xoffset=25, yoffset=70, image=pygame.image.load("Sprites\Weapons\Ball_02.png"),
-                 bullet=True, dir=1):
+                 bullet=True, dir=1, vel=12):
         global bullets
         self.x = x + xoffset
         self.y = y - yoffset
@@ -145,7 +153,7 @@ class Bullet:
         else:
             self.hitbox = hitbox(self, offset=-45, xoffset=13, yoffset=20, machinebullet=True)
 
-        self.vel = 12
+        self.vel = vel
         if bullet:
             bullets.append(self)
         else:
@@ -167,7 +175,7 @@ class Bullet:
 
 
 class Enemy:
-    def __init__(self, x, y, image=enemySprite, surface=window, resizeFactor=.125, spawnbulletchance=100):
+    def __init__(self, x, y, image=enemySprite, surface=window, resizeFactor=.125):
         self.x = x
         self.y = y
         self.image = image
@@ -176,7 +184,7 @@ class Enemy:
 
         self.hitbox = hitbox(self, offset=0)
 
-        self.spawnbulletchance = spawnbulletchance / round
+        self.spawnbulletchance = 2 * round + 100
 
         self.resize()
 
@@ -191,7 +199,11 @@ class Enemy:
         Bullet(self.x, self.y, xoffset=45, yoffset=-70, image=pygame.image.load("Sprites\Weapons\Machine Gun.png"),
                bullet=False, dir=-1)
 
+    def setBulletChance(self):
+        self.spawnbulletchance = 2 * round + 100
+
     def draw(self):
+        self.setBulletChance()
         shootbullet = random.randint(0, self.spawnbulletchance)
         self.hitbox.draw()
         if shootbullet == self.spawnbulletchance / 2:
@@ -205,6 +217,40 @@ class Enemy:
         animation.animate()
         bullets.pop(0)
 
+
+# Message classes
+
+class Message:
+    def __init__(self, x, y, message, duration, doAfter, color=(0, 0, 0), antiAlias=True):
+        self.x = x
+        self.y = y
+        self.message = message
+        self.duration = duration
+        self.creationTime = time.time()
+        self.color = color
+        self.antiAlias = antiAlias
+        self.messageSurface = FONT.render(self.message, self.antiAlias, self.color)
+        self.doAfter = doAfter
+        messages.append(self)
+
+    def draw(self):
+        if time.time() - self.creationTime >= self.duration:
+            messages.pop(messages.index(self))
+            self.doAfter()
+        else:
+            return window.blit(self.messageSurface, (self.x, self.y))
+
+
+class roundMessage(Message):
+    def __init__(self, x, y):
+        global round
+        super().__init__(x, y, f"Round {round + 1} Begins", 5, self.newRound)
+        round += 1
+
+    def newRound(self):
+        global startingNewRound
+        GenerateEnemies(round=round)
+        startingNewRound = False
 
 # Animations
 
@@ -264,6 +310,8 @@ def drawAll():
     player.draw()
     for animation in animations:
         animation.animate()
+    for message in messages:
+        message.draw()
 
 
 def collisionCheck():
@@ -272,6 +320,10 @@ def collisionCheck():
         clock.tick(FRAMERATE)
         for bullet in machinebullets:
             collided = (player.hitbox.y < bullet.hitbox.y + bullet.hitbox.height) and bullet.hitbox.x in range(player.hitbox.x, player.hitbox.x + player.hitbox.width)
+
+
+def genRoundMessage():
+    msg = roundMessage(100, 100)
 
 
 def stopGame():
@@ -294,7 +346,7 @@ delay = 0
 collisionThread = threading.Thread(target=collisionCheck)
 collisionThread.start()
 
-
+startingNewRound = False
 while run:
     clock.tick(FRAMERATE)
     for event in pygame.event.get():
@@ -310,6 +362,9 @@ while run:
     # Draw everything
     drawAll()
 
+    if enemies == [] and not startingNewRound :
+        startingNewRound = True
+        genRoundMessage()
 
     # Should be refactored later
     # VERY IN EFFICIENT
