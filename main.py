@@ -1,5 +1,3 @@
-from math import ceil
-
 import pygame
 from pygame.locals import *
 
@@ -33,7 +31,8 @@ messages = []
 # CONSTANTS
 WIDTH, HEIGHT = 1000, 900
 FRAMERATE = 60
-FONT = pygame.font.SysFont("Fixedsys Regular", 30)
+FONTSIZE = 100
+FONT = pygame.font.SysFont("Fixedsys Regular", FONTSIZE)
 
 
 window = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -41,9 +40,7 @@ pygame.display.set_caption("Plane Shooter")
 clock = pygame.time.Clock()
 
 
-
 # Classes
-
 
 class hitbox:
     def __init__(self, obj, offset=0, xoffset=0, yoffset=0, machinebullet=False, playerbullet=False, height=0, width=0) -> None:
@@ -89,9 +86,8 @@ class Player:
         self.resizeFactor = resizeFactor
         adjustedwidth = int(self.image.get_rect().width * self.resizeFactor)
         adjustedheight = int(self.image.get_rect().height * self.resizeFactor)
-        self.hitbox = hitbox(self, offset=20, width=adjustedwidth, height=adjustedheight)
+        self.hitbox = hitbox(self, offset=20, width=adjustedwidth - 15, height=adjustedheight - 60, xoffset=10,  yoffset=40)
         self.resizeImage()
-        #self.hitbox = hitbox(self)
         self.hit = False
 
     def resizeImage(self) -> None:
@@ -129,7 +125,7 @@ class Player:
         self.hitbox.move()
 
     def spawnBullet(self):
-        Bullet(self.x, self.y)
+        Bullet(self.x, self.y, vel=20)
 
     def draw(self):
         self.hitbox.draw()
@@ -211,11 +207,11 @@ class Enemy:
 
         return self.surface.blit(self.image, (self.x, self.y))
 
-    def destroy(self):
+    def destroy(self, bullet):
         enemies.pop(enemies.index(self))
-        animation = explodeAnimation(bullets[0].hitbox.x, bullets[0].hitbox.y)
+        animation = explodeAnimation(bullet.hitbox.x, bullet.hitbox.y)
         animation.animate()
-        bullets.pop(0)
+        bullets.pop(bullets.index(bullet))
 
 
 # Message classes
@@ -242,9 +238,9 @@ class Message:
 
 
 class roundMessage(Message):
-    def __init__(self, x, y):
+    def __init__(self, x, y, color=(0, 0, 0)):
         global round
-        super().__init__(x, y, f"Round {round + 1} Begins", 5, self.newRound)
+        super().__init__(x, y, f"Round {round + 1}!", 5, self.newRound, color=color)
         round += 1
 
     def newRound(self):
@@ -323,7 +319,7 @@ def collisionCheck():
 
 
 def genRoundMessage():
-    msg = roundMessage(100, 100)
+    msg = roundMessage(WIDTH / 2 - len(f"Round {round}!") - FONTSIZE - 40, HEIGHT / 2 - FONTSIZE, color=(255, 255, 255))
 
 
 def stopGame():
@@ -376,6 +372,6 @@ while run:
             collided = enemy.x in range(int(bulletboxX)) and bullet.hitbox.x in range(
                 int(enemyboxX)) and bullet.hitbox.y in range(int(enemyboxY))
             if collided:
-                enemy.destroy()
+                enemy.destroy(bullet)
 
     pygame.display.flip()
