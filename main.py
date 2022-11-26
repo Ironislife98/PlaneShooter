@@ -10,7 +10,6 @@ pygame.init()
 
 # Initialize Images
 
-
 background = pygame.image.load("Sprites\Background\\Nebula_1_1_Bottom.png")
 bgstars = pygame.image.load("Sprites\Background\Stars-Medium_1_1_PC.png")
 
@@ -323,6 +322,5 @@ while run:
                 int(enemyboxX)) and bullet.hitbox.y in range(int(enemyboxY))
             if collided:
                 enemy.destroy()
-
 
     pygame.display.flip()
