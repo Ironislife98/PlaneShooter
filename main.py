@@ -37,15 +37,19 @@ FRAMERATE = 60
 
 
 class hitbox:
-    def __init__(self, obj, offset=0, xoffset=0, yoffset=0, machinebullet=False, playerbullet=True) -> None:
+    def __init__(self, obj, offset=0, xoffset=0, yoffset=0, machinebullet=False, playerbullet=False, height=0, width=0) -> None:
         self.obj = obj
         self.offset = offset
         self.xoffset = xoffset
         self.yoffset = yoffset
         self.x = obj.x + self.xoffset
         self.y = obj.y + self.yoffset
-        self.width = obj.image.get_rect().width * self.obj.resizeFactor
-        self.height = obj.image.get_rect().height * self.obj.resizeFactor - self.offset
+        if width == 0 and height == 0:
+            self.width = obj.image.get_rect().width * self.obj.resizeFactor
+            self.height = obj.image.get_rect().height * self.obj.resizeFactor - self.offset
+        else:
+            self.width = width
+            self.height = height
 
         self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width, self.height), 2)
 
@@ -77,10 +81,12 @@ class Player:
         self.fire = False
         self.firetime = None
         self.resizeFactor = resizeFactor
-        self.hitbox = hitbox(self, offset=20)
-        self.hit = False
-
+        adjustedwidth = int(self.image.get_rect().width * self.resizeFactor)
+        adjustedheight = int(self.image.get_rect().height * self.resizeFactor)
+        self.hitbox = hitbox(self, offset=20, width=adjustedwidth, height=adjustedheight)
         self.resizeImage()
+        #self.hitbox = hitbox(self)
+        self.hit = False
 
     def resizeImage(self) -> None:
         width = self.image.get_rect().width
@@ -216,42 +222,34 @@ def drawAll():
         bullet.move()
     window.blit(background, (0, 0))
     window.blit(bgstars, (0, 0))
-    for enemy in enemies:
-        enemy.draw()
-    player.draw()
     for bullet in machinebullets:
         bullet.draw()
         bullet.move()
+    for enemy in enemies:
+        enemy.draw()
+    player.draw()
+
 
 
 def collisionCheck():
-    global player
+    global player, run, delay
     while run:
+        clock.tick(FRAMERATE)
         for bullet in machinebullets:
-            clock.tick(FRAMERATE)
-            collided = False
-            bulletboxX = [int(bullet.hitbox.x), int(bullet.hitbox.x + bullet.hitbox.width)]
-            bulletboxY = [int(bullet.hitbox.y), int(bullet.hitbox.x + bullet.hitbox.height)]
-            playerboxX = [int(player.hitbox.x), int(player.hitbox.x + player.hitbox.width)]
-            playerboxY = [int(player.hitbox.y), int(player.hitbox.y + player.hitbox.height)]
-
-            # Essentially will generate a range of x values for the players hitbox and a range of y values of the players hitbox
-            # Then will check if the bullet hitbox is in the players hitbox
-            # print(f"Player x: {player.x}, range {range(int(bulletboxY))}")
-            # print(len(machinebullets))
-            if player.hitbox.y < (bullet.hitbox.y + bullet.hitbox.height):
-                if (bullet.hitbox.x < player.hitbox.x < (bullet.hitbox.x + bullet.hitbox.width)) or (
-                        bullet.hitbox.x < (player.hitbox.x + player.hitbox.width) < (bullet.hitbox.x + bullet.hitbox.y)):
-                    collided = True
-                else:
-                    collided = False
-            else:
-                collided = False
-
-            if collided:
-                player.hit = True
-            else:
-                player.hit = False
+            """
+            bulletboxX = bullet.hitbox.x + bullet.hitbox.width
+            bulletboxY = bullet.hitbox.x + bullet.hitbox.height
+            playerboxX = player.hitbox.x + player.hitbox.width
+            playerboxY = player.hitbox.y + player.hitbox.height
+            collided = player.hitbox.x in range(int(bulletboxX)) and bullet.hitbox.x in range(
+                int(playerboxX)) and bullet.hitbox.y in range(int(playerboxY))
+            print(collided)"""
+            bulletboxX = bullet.hitbox.x + bullet.hitbox.width
+            bulletboxY = bullet.hitbox.x + bullet.hitbox.height
+            playerboxX = player.hitbox.x + player.hitbox.width
+            playerboxY = player.hitbox.y + player.hitbox.height
+            #print(f"bullet x: {bullet.hitbox.x} playerx boundary: {range(player.hitbox.x, player.hitbox.x + player.hitbox.width)}")
+            collided = (player.hitbox.y < bullet.hitbox.y + bullet.hitbox.height) and bullet.hitbox.x in range(player.hitbox.x, player.hitbox.x + player.hitbox.width)
 
 
 def stopGame():
@@ -269,6 +267,7 @@ round = 1
 GenerateEnemies(round)
 
 run = True
+delay = 0
 
 collisionThread = threading.Thread(target=collisionCheck)
 collisionThread.start()
@@ -289,7 +288,7 @@ while run:
     # Draw everything
     drawAll()
 
-
+    time.sleep(delay)
 
     # Should be refactored later
     # VERY IN EFFICIENT
