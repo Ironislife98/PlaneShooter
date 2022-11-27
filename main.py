@@ -5,9 +5,13 @@ import random
 import time
 import sys
 import threading
+import json
 
 pygame.init()
 pygame.font.init()
+
+
+
 
 # Initialize Images
 
@@ -245,8 +249,11 @@ class roundMessage(Message):
 
     def newRound(self):
         global startingNewRound
+
         GenerateEnemies(round=round)
+
         startingNewRound = False
+
 
 # Animations
 
@@ -360,6 +367,7 @@ while run:
 
     if enemies == [] and not startingNewRound :
         startingNewRound = True
+        machinebullets = []
         genRoundMessage()
 
     # Should be refactored later
