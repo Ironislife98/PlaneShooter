@@ -10,7 +10,13 @@ import json
 pygame.init()
 pygame.font.init()
 
+# Import settings.json
+with open("settings.json") as f:
+    settings = json.load(f)
 
+# Load settings
+HITBOXES = settings["hitboxes"]
+GODMODE = settings["godmode"]
 
 
 # Initialize Images
@@ -24,6 +30,7 @@ enemySprite = pygame.image.load("Sprites\Enemies\Enemy_01.png")
 
 enemyhitanimation = [pygame.image.load("Sprites\VFX\Enemy Hit Effect\Enemy Hit Effect_01.png"), pygame.image.load("Sprites\VFX\Enemy Hit Effect\Enemy Hit Effect_02.png")]
 
+playerhitanimation = [pygame.image.load("Sprites\VFX\Explosions\Small Explosion_01_Smoke_01.png"), pygame.image.load("Sprites\VFX\Explosions\Small Explosion_01_Smoke_02.png")]
 
 # Lists of stuff
 bullets = []
@@ -73,7 +80,8 @@ class hitbox:
     # Only used for testing
     # Hitboxes should be invisible
     def draw(self) -> None:
-        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width, self.height), 2)
+        if HITBOXES:
+            self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width, self.height), 2)
 
 
 class Player:
@@ -93,6 +101,9 @@ class Player:
         self.hitbox = hitbox(self, offset=20, width=adjustedwidth - 15, height=adjustedheight - 60, xoffset=10,  yoffset=40)
         self.resizeImage()
         self.hit = False
+
+        self.hitanimation = playerhitanimation
+
 
     def resizeImage(self) -> None:
         width = self.image.get_rect().width
@@ -127,6 +138,10 @@ class Player:
                     self.fire = False
 
         self.hitbox.move()
+
+    def handleDeath(self):
+        anim = playerDeath(self)
+        anim.animate()
 
     def spawnBullet(self):
         Bullet(self.x, self.y, vel=20)
@@ -241,7 +256,7 @@ class Message:
             return window.blit(self.messageSurface, (self.x, self.y))
 
 
-class roundMessage(Message):
+class displayRound(Message):
     def __init__(self, x, y, color=(0, 0, 0)):
         global round
         super().__init__(x, y, f"Round {round + 1}!", 5, self.newRound, color=color)
@@ -258,13 +273,19 @@ class roundMessage(Message):
 # Animations
 
 class Animation:
-    def __init__(self, x, y, images, repeatTimes=10 , startIndex=0, xoffset=0, yoffset=0):
+    def __init__(self, x, y, images, repeatTimes=10, startIndex=0, xoffset=0, yoffset=0, resizeFactor=1):
         self.x = x + xoffset
         self.y = y + yoffset
         self.repeatTimes = repeatTimes
         self.images = images
         self.counter = startIndex
         self.image = self.images[self.counter]
+        self.resizeFactor = resizeFactor
+        for image in range(len(self.images)):
+            width = self.images[image].get_rect().width
+            height = self.images[image].get_rect().height
+
+            self.images[image] = pygame.transform.scale(self.images[image], (int(width * self.resizeFactor), int(height * self.resizeFactor)))
         animations.append(self)
 
     def animate(self):
@@ -281,6 +302,12 @@ class Animation:
     def draw(self):
         return window.blit(self.image, (self.x, self.y))
 
+
+class playerDeath(Animation):
+    def __init__(self, player):
+        global machinebullets
+        super().__init__(player.x, player.y, player.hitanimation, yoffset=-400, resizeFactor=.5)
+        machinebullets = []
 
 class explodeAnimation(Animation):
     def __init__(self, x, y):
@@ -322,11 +349,11 @@ def collisionCheck():
     while run:
         clock.tick(FRAMERATE)
         for bullet in machinebullets:
-            collided = (player.hitbox.y < bullet.hitbox.y + bullet.hitbox.height) and bullet.hitbox.x in range(player.hitbox.x, player.hitbox.x + player.hitbox.width)
+            player.hit = (player.hitbox.y < bullet.hitbox.y + bullet.hitbox.height) and bullet.hitbox.x in range(player.hitbox.x, player.hitbox.x + player.hitbox.width)
 
 
 def genRoundMessage():
-    msg = roundMessage(WIDTH / 2 - len(f"Round {round}!") - FONTSIZE - 40, HEIGHT / 2 - FONTSIZE, color=(255, 255, 255))
+    displayRound(WIDTH / 2 - len(f"Round {round}!") - FONTSIZE - 40, HEIGHT / 2 - FONTSIZE, color=(255, 255, 255))
 
 
 def stopGame():
@@ -364,6 +391,9 @@ while run:
 
     # Draw everything
     drawAll()
+
+    if player.hit and not GODMODE:
+        player.handleDeath()
 
     if enemies == [] and not startingNewRound :
         startingNewRound = True

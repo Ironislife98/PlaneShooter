@@ -1,3 +1,4 @@
 {
-  "hitboxes": true
+  "hitboxes": true,
+  "godmode": false
 }
