@@ -41,7 +41,7 @@ messages = []
 
 # CONSTANTS
 WIDTH, HEIGHT = 1000, 900
-FRAMERATE = 60
+FRAMERATE = 1000
 FONTSIZE = 100
 FONT = pygame.font.SysFont("Fixedsys Regular", FONTSIZE)
 
@@ -68,7 +68,7 @@ class hitbox:
             self.width = width
             self.height = height
 
-        self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width, self.height), 2)
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         self.machinebullet = machinebullet
         self.playerbullet = playerbullet
@@ -82,6 +82,8 @@ class hitbox:
     def draw(self) -> None:
         if HITBOXES:
             self.rect = pygame.draw.rect(window, (255, 255, 255), pygame.Rect(self.x, self.y, self.width, self.height), 2)
+        else:
+            self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
 
 class Player:
@@ -101,7 +103,7 @@ class Player:
         self.hitbox = hitbox(self, offset=20, width=adjustedwidth - 15, height=adjustedheight - 60, xoffset=10,  yoffset=40)
         self.resizeImage()
         self.hit = False
-
+        self.rect = pygame.Rect(self.x, self.y, self.image.get_rect().width, self.image.get_rect().height)
         self.hitanimation = playerhitanimation
 
 
@@ -148,6 +150,7 @@ class Player:
 
     def draw(self):
         self.hitbox.draw()
+        self.rect = pygame.Rect(self.x, self.y, self.image.get_rect().width, self.image.get_rect().height)
         return self.surface.blit(self.image, (self.x, self.y))
 
 
@@ -349,7 +352,8 @@ def collisionCheck():
     while run:
         clock.tick(FRAMERATE)
         for bullet in machinebullets:
-            player.hit = (player.hitbox.y < bullet.hitbox.y + bullet.hitbox.height) and bullet.hitbox.x in range(player.hitbox.x, player.hitbox.x + player.hitbox.width)
+            #player.hit = (player.hitbox.y < bullet.hitbox.y + bullet.hitbox.height) and bullet.hitbox.x in range(player.hitbox.x, player.hitbox.x + player.hitbox.width)
+            player.hit = player.rect.colliderect(bullet.hitbox.rect)
 
 
 def genRoundMessage():
@@ -400,15 +404,10 @@ while run:
         machinebullets = []
         genRoundMessage()
 
-    # Should be refactored later
-    # VERY IN EFFICIENT
+    # I would like to get rid of the nested loops but I need access to all of the bullets and all of the enemies
     for bullet in bullets:
         for enemy in enemies:
-            bulletboxX = bullet.hitbox.x + bullet.hitbox.width
-            enemyboxX = enemy.hitbox.x + enemy.hitbox.width
-            enemyboxY = enemy.hitbox.y + enemy.hitbox.height
-            collided = enemy.x in range(int(bulletboxX)) and bullet.hitbox.x in range(
-                int(enemyboxX)) and bullet.hitbox.y in range(int(enemyboxY))
+            collided = enemy.hitbox.rect.colliderect(bullet.hitbox.rect)
             if collided:
                 enemy.destroy(bullet)
 
